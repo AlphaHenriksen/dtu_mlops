@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import Dataset, DataLoader, ConcatDataset
 from torchvision import transforms
+import numpy as np
 
 
 raw_path = "data/raw/"
@@ -60,9 +61,13 @@ if __name__ == "__main__":
     train_loader, test_loader = mnist()
 
     train_images, train_labels = next(iter(train_loader))
-    torch.save(train_images, f"{processed_path}train_images.pt")
-    torch.save(train_labels, f"{processed_path}train_labels.pt")
+    # torch.save(train_images, f"{processed_path}train_images.pt")
+    # torch.save(train_labels, f"{processed_path}train_labels.pt")
 
     test_images, test_labels = next(iter(test_loader))
-    torch.save(test_images, f"{processed_path}test_images.pt")
-    torch.save(test_labels, f"{processed_path}test_labels.pt")
+    # # Save as torch tensors
+    # torch.save(test_images, f"{processed_path}test_images.pt")
+    # torch.save(test_labels, f"{processed_path}test_labels.pt")
+    
+    # # Save the first 10 images from test_images to example_images.npy
+    # np.save(f"{processed_path}example_images.npy", test_images[:10])

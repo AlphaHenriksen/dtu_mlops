@@ -1,7 +1,5 @@
 import torch
-import torch
 from models.model import MyAwesomeModel
-import matplotlib.pyplot as plt
 
 from data.make_dataset import mnist
 

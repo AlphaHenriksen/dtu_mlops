@@ -1,7 +1,5 @@
-import click
 import torch
 from models.model import MyAwesomeModel
-from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 from data.make_dataset import mnist

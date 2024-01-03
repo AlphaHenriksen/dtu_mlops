@@ -27,7 +27,7 @@ def mnist():
     """Return train and test dataloaders for MNIST."""
     # exchange with the corrupted mnist dataset
     # Create a list of train datasets for each i in range(6)
-    path = "C:/Users/ander/OneDrive/Skrivebord/02476 Machine Learning Operations/dtu_mlops/data/corruptmnist/"
+    path = "dtu_mlops/data/corruptmnist/"
     train_datasets = [CustomDataset(f'{path}train_images_{i}.pt', f'{path}train_target_{i}.pt') for i in range(6)]
 
     # Concatenate the train datasets into one

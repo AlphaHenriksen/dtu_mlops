@@ -1,7 +1,12 @@
 import torch
-from models.model import MyAwesomeModel
+import os
+import sys
 import matplotlib.pyplot as plt
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+from models.model import MyAwesomeModel
 from data.make_dataset import mnist
 
 

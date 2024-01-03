@@ -1,13 +1,14 @@
 import numpy as np
 import click
 import torch
+import os
+import sys
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
 from models.model import MyAwesomeModel
-
 from data.make_dataset import mnist
-
-
-model_path = "models/"
-visualization_path = "reports/figures/"
 
 
 @click.group()

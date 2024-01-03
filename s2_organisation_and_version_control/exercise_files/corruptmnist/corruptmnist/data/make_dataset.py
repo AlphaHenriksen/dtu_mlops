@@ -50,7 +50,7 @@ def mnist():
 
     # Create the test dataset and loader
     test_dataset = CustomDataset(f'{raw_path}test_images.pt', f'{raw_path}test_target.pt', transform=transform)
-    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=10000, shuffle=False)
     
     return train_loader, test_loader
 

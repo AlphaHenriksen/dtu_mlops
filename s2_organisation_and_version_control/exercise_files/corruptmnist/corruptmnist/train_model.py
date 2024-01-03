@@ -12,11 +12,19 @@ visualization_path = "reports/figures/"
 
 
 def train(lr):
-    """Train a model on MNIST."""
+    """
+    Using the corrupted MNIST dataset, train a cnn model.
+    
+    Parameters:
+        lr (float): learning rate for the optimizer.
+    
+    Returns:
+        None.
+    """
     print("Training day and night")
     print(lr)
 
-    # TODO: Implement training loop here
+
     model = MyAwesomeModel()
     train_set, _ = mnist()
     
@@ -26,26 +34,30 @@ def train(lr):
     accuracies = []
     losses = []
 
+    # Training loop
     for epoch in range(2):
-        # Get accuracy
         running_loss = 0
         correct = 0
         total = 0
         
         for images, targets in train_set:
+            # Forward pass
             optimizer.zero_grad()
             outputs = model(images)
+            
+            # Backward pass
             loss = criterion(outputs, targets)
             loss.backward()
             optimizer.step()
         
-            running_loss += loss.item()    
-            # Accuracy
+            running_loss += loss.item()
+            
+            # Accuracy calculation
             _, predicted = torch.max(outputs.data, 1)
             total += targets.size(0)
             correct += (predicted == targets).sum().item()
-            
-        # Accuracy
+
+        # Get metrics
         accuracy = 100 * correct / total
         loss = running_loss/len(train_set)
         accuracies.append(accuracy)
@@ -55,6 +67,7 @@ def train(lr):
         print(f"Training loss: {loss}")
         print(f"Accuracy: {accuracy}\n")
         
+    # Do plotting
     plt.plot(losses, label="loss")
     plt.plot(accuracies, label="accuracy")
     plt.xlabel("Epoch")

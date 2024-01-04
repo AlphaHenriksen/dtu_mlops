@@ -21,7 +21,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-@hydra.main(config_name="config.yaml")
+@hydra.main(config_path="config", config_name="config.yaml")
 def train(config):
     # Model Hyperparameters
     torch.manual_seed(config.hyperparameters.seed)

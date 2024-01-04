@@ -1,8 +1,8 @@
 import numpy as np
-import click
 import torch
 import os
 import sys
+import random
 import hydra
 import logging
 
@@ -14,17 +14,8 @@ from models.model import MyAwesomeModel
 from data.make_dataset import mnist
 
 
-
-@click.group()
-def cli():
-    """Command line interface."""
-    pass
-
-
-@click.command()
-@click.argument("model_checkpoint")
-@click.argument("data_path")
-def predict(model_checkpoint, data_path):
+@hydra.main(config_path="../config", config_name="predict_config.yaml")
+def predict(config):
     """Run prediction for a given model and dataloader.
 
     Args:
@@ -35,12 +26,29 @@ def predict(model_checkpoint, data_path):
         Tensor of shape [N, d] where N is the number of samples and d is the output dimension of the model
 
     """
-    print("Evaluating like my life dependends on it")
-    print(model_checkpoint)
+    
+    torch.manual_seed(config.seed)
+    random.seed(config.seed)
+    np.random.seed(config.seed)
+    
+    
+    model_checkpoint = hydra.utils.to_absolute_path(config.model_checkpoint)
+    data_path = hydra.utils.to_absolute_path(config.data_path)
+    
+    log.info("Evaluating like my life dependends on it")
+    log.info(model_checkpoint)
 
     # TODO: Implement evaluation logic here
     # model = torch.load(model_checkpoint)
-    model = MyAwesomeModel()
+    model = MyAwesomeModel(
+        config.model.x_dim,
+        config.model.hidden_dim,
+        config.model.latent_dim,
+        config.model.output_dim,
+        config.model.kernel_size,
+        config.model.padding,
+        config.model.dropout
+    )
     state_dict = torch.load(model_checkpoint)
     model.load_state_dict(state_dict)
     model.eval()
@@ -52,16 +60,10 @@ def predict(model_checkpoint, data_path):
     with torch.no_grad():
         outputs = model(images)
     
-    print(outputs.shape)
+    log.info(outputs.shape)
 
     return outputs
 
 
-cli.add_command(predict)
-
-
 if __name__ == "__main__":
-    cli()
-    
-    # To run:
-    # python corruptmnist/predict_model.py predict models/checkpoint.pth data/processed/example_images.npy
+    predict()

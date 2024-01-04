@@ -1,2 +1,2 @@
 # Other values should be added here. These could be hyperparameters that make sense to use with this kind of optimizer
-name: sgd
+name: rmsprop

@@ -1,0 +1,16 @@
+dataset: {}
+optimizer:
+  name: adam
+model:
+  hidden_dim: 32
+  latent_dim: 64
+  output_dim: 10
+  x_dim: 784
+  kernel_size: 3
+  padding: 1
+  dropout: 0.2
+train_batch_size: 32
+test_batch_size: 10000
+learning_rate: 0.001
+epochs: 10
+seed: 123

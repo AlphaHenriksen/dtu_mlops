@@ -7,5 +7,5 @@ seed: 123
 
 defaults:
   - dataset: mnist
-  - optimizer: adam
+  - optimizer: sgd
   - model: model_config

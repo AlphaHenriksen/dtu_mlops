@@ -49,7 +49,15 @@ def train(config):
         )
     train_set, _ = mnist(config.train_batch_size, config.test_batch_size)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
+    if config.optimizer.name == 'adam':
+        optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
+    elif config.optimizer.name == 'sgd':
+        optimizer = torch.optim.SGD(model.parameters(), lr=config.learning_rate)
+    elif config.optimizer.name == 'rmsprop':
+        optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)
+    else:
+        raise ValueError(f"Optimizer {config.optimizer.name} not supported. Please choose one of [adam, sgd, rmsprop].")
+
     criterion = torch.nn.CrossEntropyLoss()
 
     accuracies = []
@@ -104,3 +112,8 @@ def train(config):
 
 if __name__ == "__main__":
     train()
+    
+    # The file should be run from the home directory of the project (the first corruptmnist folder)
+    
+    # Run multirun
+    # python corruptmnist/models/train_model.py learning_rate=0.001,0.0001 optimizer.name=sgd,adam,rmsprop --multirun

@@ -3,12 +3,16 @@ import click
 import torch
 import os
 import sys
+import hydra
+import logging
 
+log = logging.getLogger(__name__)
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 from models.model import MyAwesomeModel
 from data.make_dataset import mnist
+
 
 
 @click.group()

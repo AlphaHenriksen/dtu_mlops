@@ -21,14 +21,14 @@ class MyAwesomeModel(nn.Module):
 
     #     return x
 
-    def __init__(self):
+    def __init__(self, x_dim, hidden_dim, latent_dim, output_dim, kernel_size, padding, dropout):
         super().__init__()
-        self.layer1 = nn.Conv2d(1, 32, 3, padding=1)
-        self.layer2 = nn.Conv2d(32, 64, 3, padding=1)
-        self.layer3 = nn.Linear(64 * 28 * 28, 10)
+        self.layer1 = nn.Conv2d(1, hidden_dim, kernel_size, padding=padding)
+        self.layer2 = nn.Conv2d(hidden_dim, latent_dim, kernel_size, padding=padding)
+        self.layer3 = nn.Linear(latent_dim * x_dim, output_dim)
 
         self.relu = nn.ReLU()
-        self.dropout = nn.Dropout(p=0.2)
+        self.dropout = nn.Dropout(p=dropout)
         self.flatten = nn.Flatten()
 
     def forward(self, x):

@@ -2,6 +2,10 @@ import torch
 import os
 import sys
 import matplotlib.pyplot as plt
+import logging
+import hydra
+import random
+import numpy as np
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
@@ -10,11 +14,13 @@ from models.model import MyAwesomeModel
 from data.make_dataset import mnist
 
 
-model_path = "models/"
-visualization_path = "reports/figures/"
+log = logging.getLogger(__name__)
+model_path = hydra.utils.to_absolute_path('models')
+visualization_path = hydra.utils.to_absolute_path('reports/figures')
 
 
-def train(lr):
+@hydra.main(config_path="../config", config_name="train_config.yaml")
+def train(config):
     """
     Using the corrupted MNIST dataset, train a cnn model.
 
@@ -24,20 +30,33 @@ def train(lr):
     Returns:
         None.
     """
-    print("Training day and night")
-    print(lr)
+    # Set the seeds
+    torch.manual_seed(config.seed)
+    random.seed(config.seed)
+    np.random.seed(config.seed)
+    
+    log.info("Training day and night")
+    log.info(config.learning_rate)
 
-    model = MyAwesomeModel()
-    train_set, _ = mnist()
+    model = MyAwesomeModel(
+        config.model.x_dim,
+        config.model.hidden_dim,
+        config.model.latent_dim,
+        config.model.output_dim,
+        config.model.kernel_size,
+        config.model.padding,
+        config.model.dropout
+        )
+    train_set, _ = mnist(config.train_batch_size, config.test_batch_size)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
     criterion = torch.nn.CrossEntropyLoss()
 
     accuracies = []
     losses = []
 
     # Training loop
-    for epoch in range(2):
+    for epoch in range(config.epochs):
         running_loss = 0
         correct = 0
         total = 0
@@ -65,21 +84,23 @@ def train(lr):
         accuracies.append(accuracy)
         losses.append(loss)
 
-        print(f"Epoch {epoch+1} of 10")
-        print(f"Training loss: {loss}")
-        print(f"Accuracy: {accuracy}\n")
+        log.info(f"Epoch {epoch+1} of 10")
+        log.info(f"Training loss: {loss}")
+        log.info(f"Accuracy: {accuracy}\n")
 
     # Do plotting
     plt.plot(losses, label="loss")
     plt.plot(accuracies, label="accuracy")
     plt.xlabel("Epoch")
     plt.ylabel("Score")
-    plt.savefig(f"{visualization_path}viz.png")
+    # plt.savefig(f"{visualization_path}/viz.png")
+    plt.savefig(f"viz.png")
     plt.show()
 
-    print("Saving final model.")
-    torch.save(model.state_dict(), f"{model_path}checkpoint.pth")
+    log.info("Saving final model.")
+    # torch.save(model.state_dict(), f"{model_path}/checkpoint.pth")
+    torch.save(model.state_dict(), f"checkpoint.pth")
 
 
 if __name__ == "__main__":
-    train(1e-3)
+    train()

@@ -1,0 +1,15 @@
+# @package _group_
+train_batch_size: 32
+test_batch_size: 10000
+learning_rate: 0.001
+epochs: 10
+seed: 123
+
+defaults:
+  - dataset: mnist
+  - optimizer: adam
+  - model: model_config
+
+hydra:
+  searchpath:
+    - pkg://corruptmnist/data

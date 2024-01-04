@@ -2,10 +2,11 @@ import torch
 from torch.utils.data import Dataset, DataLoader, ConcatDataset
 from torchvision import transforms
 import numpy as np
+import hydra
 
 
-raw_path = "data/raw/"
-processed_path = "data/processed/"
+raw_path = hydra.utils.to_absolute_path('data/raw')
+processed_path = hydra.utils.to_absolute_path('data/processed')
 
 
 class CustomDataset(Dataset):
@@ -29,7 +30,7 @@ class CustomDataset(Dataset):
         return image, target
 
 
-def mnist():
+def mnist(train_batch_size, test_batch_size):
     """Return train and test dataloaders for MNIST."""
     # exchange with the corrupted mnist dataset
     # Create a list of train datasets for each i in range(6)
@@ -40,7 +41,7 @@ def mnist():
     transform = transforms.Compose([transforms.Normalize((0,), (1,))])
 
     train_datasets = [
-        CustomDataset(f"{raw_path}train_images_{i}.pt", f"{raw_path}train_target_{i}.pt", transform=transform)
+        CustomDataset(f"{raw_path}/train_images_{i}.pt", f"{raw_path}/train_target_{i}.pt", transform=transform)
         for i in range(6)
     ]
 
@@ -48,26 +49,26 @@ def mnist():
     concatenated_train_dataset = ConcatDataset(train_datasets)
 
     # Create a single train loader
-    train_loader = DataLoader(concatenated_train_dataset, batch_size=32, shuffle=True)
+    train_loader = DataLoader(concatenated_train_dataset, batch_size=train_batch_size, shuffle=True)
 
     # Create the test dataset and loader
-    test_dataset = CustomDataset(f"{raw_path}test_images.pt", f"{raw_path}test_target.pt", transform=transform)
-    test_loader = DataLoader(test_dataset, batch_size=10000, shuffle=False)
+    test_dataset = CustomDataset(f"{raw_path}/test_images.pt", f"{raw_path}/test_target.pt", transform=transform)
+    test_loader = DataLoader(test_dataset, batch_size=test_batch_size, shuffle=False)
 
     return train_loader, test_loader
 
 
 if __name__ == "__main__":
-    train_loader, test_loader = mnist()
+    train_loader, test_loader = mnist(32, 10000)
 
     train_images, train_labels = next(iter(train_loader))
-    # torch.save(train_images, f"{processed_path}train_images.pt")
-    # torch.save(train_labels, f"{processed_path}train_labels.pt")
+    # torch.save(train_images, f"{processed_path}/train_images.pt")
+    # torch.save(train_labels, f"{processed_path}/train_labels.pt")
 
     test_images, test_labels = next(iter(test_loader))
     # # Save as torch tensors
-    # torch.save(test_images, f"{processed_path}test_images.pt")
-    # torch.save(test_labels, f"{processed_path}test_labels.pt")
+    # torch.save(test_images, f"{processed_path}/test_images.pt")
+    # torch.save(test_labels, f"{processed_path}/test_labels.pt")
     
     # # Save the first 10 images from test_images to example_images.npy
-    # np.save(f"{processed_path}example_images.npy", test_images[:10])
+    # np.save(f"{processed_path}/example_images.npy", test_images[:10])

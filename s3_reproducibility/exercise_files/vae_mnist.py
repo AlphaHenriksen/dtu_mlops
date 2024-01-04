@@ -22,7 +22,7 @@ def train(config):
     torch.manual_seed(config.hyperparameters.seed)
     random.seed(config.hyperparameters.seed)
     np.random.seed(config.hyperparameters.seed)
-    cuda = True
+    cuda = False
     DEVICE = torch.device("cuda" if cuda else "cpu")
 
     dataset_path = "~/datasets"
@@ -45,7 +45,7 @@ def train(config):
                       hidden_dim=config.hyperparameters.hidden_dim, 
                       output_dim=config.hyperparameters.x_dim)
 
-    model = Model(Encoder=encoder, Decoder=decoder).to(DEVICE)
+    model = Model(encoder=encoder, decoder=decoder).to(DEVICE)
 
 
     # This is probably a hyperparameter

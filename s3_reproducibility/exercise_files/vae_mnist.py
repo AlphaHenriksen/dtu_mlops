@@ -15,6 +15,11 @@ from torchvision.utils import save_image
 import random
 import numpy as np
 import hydra
+import logging
+
+
+log = logging.getLogger(__name__)
+
 
 @hydra.main(config_name="config.yaml")
 def train(config):
@@ -59,13 +64,13 @@ def train(config):
         return reproduction_loss + kld
 
 
-    print("Start training VAE...")
+    log.info("Start training VAE...")
     model.train()
     for epoch in range(config.hyperparameters.epochs):
         overall_loss = 0
         for batch_idx, (x, _) in enumerate(train_loader):
             if batch_idx % 100 == 0:
-                print(batch_idx)
+                log.info(batch_idx)
             x = x.view(config.hyperparameters.batch_size, config.hyperparameters.x_dim)
             x = x.to(DEVICE)
 
@@ -78,8 +83,8 @@ def train(config):
 
             loss.backward()
             optimizer.step()
-        print(f"Epoch {epoch+1} complete!,  Average Loss: {overall_loss / (batch_idx*config.hyperparameters.batch_size)}")
-    print("Finish!!")
+        log.info(f"Epoch {epoch+1} complete!,  Average Loss: {overall_loss / (batch_idx*config.hyperparameters.batch_size)}")
+    log.info("Finish!!")
 
     # save weights
     torch.save(model, f"{os.getcwd()}/trained_model.pt")
@@ -89,7 +94,7 @@ def train(config):
     with torch.no_grad():
         for batch_idx, (x, _) in enumerate(test_loader):
             if batch_idx % 100 == 0:
-                print(batch_idx)
+                log.info(batch_idx)
             x = x.view(config.hyperparameters.batch_size, config.hyperparameters.x_dim)
             x = x.to(DEVICE)
             x_hat, _, _ = model(x)

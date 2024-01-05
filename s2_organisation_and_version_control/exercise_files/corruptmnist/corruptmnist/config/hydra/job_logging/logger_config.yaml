@@ -1,0 +1,43 @@
+version: 1
+
+root:
+    level: INFO
+    handlers: console
+    # handlers: console,info,error
+
+formatters:
+  minimal: 
+    format: "%(message)s"
+
+  detailed:
+    format: "%(levelname)s %(asctime)s [%(name)s:%(filename)s:%(funcName)s:%(lineno)d]%(message)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: minimal
+    stream: ext://sys.stdout
+
+  # info:
+  #   class: logging.handlers.RotatingFileHandler
+  #   level: INFO
+  #   formatter: detailed
+  #   filename: logs/info.log
+  #   backupCount: 10
+  #   maxBytes: 10485760
+
+  # error:
+  #   class: logging.handlers.RotatingFileHandler
+  #   level: ERROR
+  #   formatter: detailed
+  #   filename: logs/error.log
+  #   backupCount: 10
+  #   maxBytes: 10485760
+  #   encoding: utf8
+
+loggers:
+  # root:
+  #   level: INFO
+  #   handlers: [console]
+  #   # handlers: console,info,error

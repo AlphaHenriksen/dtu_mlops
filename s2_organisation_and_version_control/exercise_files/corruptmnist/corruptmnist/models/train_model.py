@@ -2,17 +2,17 @@ import torch
 import os
 import sys
 import matplotlib.pyplot as plt
-import logging
 import hydra
 import random
 import numpy as np
+import logging
+import logging.config
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 from models.model import MyAwesomeModel
 from data.make_dataset import mnist
-
 
 log = logging.getLogger(__name__)
 model_path = hydra.utils.to_absolute_path('models')
@@ -34,6 +34,12 @@ def train(config):
     torch.manual_seed(config.seed)
     random.seed(config.seed)
     np.random.seed(config.seed)
+    
+    log.debug("Used for debugging your code.")
+    log.info("Informative messages from your code.")
+    log.warning("Everything works but there is something to be aware of.")
+    log.error("There's been a mistake with the process.")
+    log.critical("There is something terribly wrong and process may terminate.")
     
     log.info("Training day and night")
     log.info(config.learning_rate)

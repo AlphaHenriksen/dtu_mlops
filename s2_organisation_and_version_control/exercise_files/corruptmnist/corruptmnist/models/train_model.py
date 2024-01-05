@@ -7,6 +7,8 @@ import random
 import numpy as np
 import logging
 import logging.config
+import wandb
+import yaml
 from rich.logging import RichHandler
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -33,91 +35,103 @@ def train(config):
     Returns:
         None.
     """
-    # Set the seeds
-    torch.manual_seed(config.seed)
-    random.seed(config.seed)
-    np.random.seed(config.seed)
-    
-    # Just to test that the different levels of logging works
-    log.debug("Used for debugging your code.")
-    log.info("Informative messages from your code.")
-    log.warning("Everything works but there is something to be aware of.")
-    log.error("There's been a mistake with the process.")
-    log.critical("There is something terribly wrong and process may terminate.\n")
-    
-    log.info("Training day and night")
-    log.info(config.learning_rate)
 
-    model = MyAwesomeModel(
-        config.model.x_dim,
-        config.model.hidden_dim,
-        config.model.latent_dim,
-        config.model.output_dim,
-        config.model.kernel_size,
-        config.model.padding,
-        config.model.dropout
-        )
-    train_set, _ = mnist(config.train_batch_size, config.test_batch_size)
+    # Kind of backwards way of getting the hyperparameters fed into wandb
+    with open(hydra.utils.to_absolute_path("corruptmnist/config/train_config.yaml"), "r") as file:
+        wandb_config = yaml.safe_load(file)
 
-    if config.optimizer.name == 'adam':
-        optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
-    elif config.optimizer.name == 'sgd':
-        optimizer = torch.optim.SGD(model.parameters(), lr=config.learning_rate)
-    elif config.optimizer.name == 'rmsprop':
-        optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)
-    else:
-        raise ValueError(f"Optimizer {config.optimizer.name} not supported. Please choose one of [adam, sgd, rmsprop].")
+    with wandb.init(project="corruptmnist", config=wandb_config):
+        # Set the seeds
+        torch.manual_seed(config.seed)
+        random.seed(config.seed)
+        np.random.seed(config.seed)
+        
+        # Just to test that the different levels of logging works
+        log.debug("Used for debugging your code.")
+        log.info("Informative messages from your code.")
+        log.warning("Everything works but there is something to be aware of.")
+        log.error("There's been a mistake with the process.")
+        log.critical("There is something terribly wrong and process may terminate.\n")
+        
+        log.info("Training day and night")
+        log.info(config.learning_rate)
 
-    criterion = torch.nn.CrossEntropyLoss()
+        model = MyAwesomeModel(
+            config.model.x_dim,
+            config.model.hidden_dim,
+            config.model.latent_dim,
+            config.model.output_dim,
+            config.model.kernel_size,
+            config.model.padding,
+            config.model.dropout
+            )
+        train_set, _ = mnist(config.train_batch_size, config.test_batch_size)
 
-    accuracies = []
-    losses = []
+        if config.optimizer.name == 'adam':
+            optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
+        elif config.optimizer.name == 'sgd':
+            optimizer = torch.optim.SGD(model.parameters(), lr=config.learning_rate)
+        elif config.optimizer.name == 'rmsprop':
+            optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)
+        else:
+            raise ValueError(f"Optimizer {config.optimizer.name} not supported. Please choose one of [adam, sgd, rmsprop].")
 
-    # Training loop
-    for epoch in range(config.epochs):
-        running_loss = 0
-        correct = 0
-        total = 0
+        criterion = torch.nn.CrossEntropyLoss()
 
-        for images, targets in train_set:
-            # Forward pass
-            optimizer.zero_grad()
-            outputs = model(images)
+        accuracies = []
+        losses = []
 
-            # Backward pass
-            loss = criterion(outputs, targets)
-            loss.backward()
-            optimizer.step()
+        # Training loop
+        for epoch in range(config.epochs):
+            running_loss = 0
+            correct = 0
+            total = 0
 
-            running_loss += loss.item()
+            for images, targets in train_set:
+                # Forward pass
+                optimizer.zero_grad()
+                outputs = model(images)
 
-            # Accuracy calculation
-            _, predicted = torch.max(outputs.data, 1)
-            total += targets.size(0)
-            correct += (predicted == targets).sum().item()
+                # Backward pass
+                loss = criterion(outputs, targets)
+                loss.backward()
+                optimizer.step()
 
-        # Get metrics
-        accuracy = 100 * correct / total
-        loss = running_loss / len(train_set)
-        accuracies.append(accuracy)
-        losses.append(loss)
+                running_loss += loss.item()
 
-        log.info(f"Epoch {epoch+1} of 10")
-        log.info(f"Training loss: {loss}")
-        log.info(f"Accuracy: {accuracy}\n")
+                # Accuracy calculation
+                _, predicted = torch.max(outputs.data, 1)
+                total += targets.size(0)
+                correct += (predicted == targets).sum().item()
 
-    # Do plotting
-    plt.plot(losses, label="loss")
-    plt.plot(accuracies, label="accuracy")
-    plt.xlabel("Epoch")
-    plt.ylabel("Score")
-    # plt.savefig(f"{visualization_path}/viz.png")
-    plt.savefig(f"viz.png")
-    plt.show()
+            # Get metrics
+            accuracy = 100 * correct / total
+            loss = running_loss / len(train_set)
+            accuracies.append(accuracy)
+            losses.append(loss)
 
-    log.info("Saving final model.")
-    # torch.save(model.state_dict(), f"{model_path}/checkpoint.pth")
-    torch.save(model.state_dict(), f"checkpoint.pth")
+            log.info(f"Epoch {epoch+1} of {config.epochs}")
+            log.info(f"Training loss: {loss}")
+            log.info(f"Accuracy: {accuracy}\n")
+            wandb.log({"Loss": loss})
+            wandb.log({"Accuracy": accuracy})
+
+        # Do plotting
+        plt.plot(losses, label="loss")
+        plt.plot(accuracies, label="accuracy")
+        plt.xlabel("Epoch")
+        plt.ylabel("Score")
+        # plt.savefig(f"{visualization_path}/viz.png")
+        plt.savefig(f"viz.png")
+        fig = plt.gcf()
+        # wandb.log({"acc_curve": wandb.Image(fig)})
+        wandb.log({"acc_plot": fig})
+        wandb.finish()
+        # plt.show()
+
+        log.info("Saving final model.")
+        # torch.save(model.state_dict(), f"{model_path}/checkpoint.pth")
+        torch.save(model.state_dict(), f"checkpoint.pth")
 
 
 if __name__ == "__main__":

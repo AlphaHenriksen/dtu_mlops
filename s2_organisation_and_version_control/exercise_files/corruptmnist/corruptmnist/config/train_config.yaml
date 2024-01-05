@@ -1,12 +1,12 @@
 train_batch_size: 32
 test_batch_size: 10000
 learning_rate: 0.001
-epochs: 10
+epochs: 3
 seed: 123
 
 defaults:
   - dataset: mnist
-  - optimizer: sgd
+  - optimizer: adam
   - model: model_config
   # Define your own logging scheme (does not work yet)
   - override hydra/job_logging: logger_config

@@ -9,7 +9,9 @@ import logging
 import logging.config
 import wandb
 import yaml
+import pytorch_lightning as pl
 from pytorch_lightning import LightningModule
+from pytorch_lightning.callbacks import ModelCheckpoint
 from rich.logging import RichHandler
 from pytorch_lightning import Trainer
 
@@ -42,88 +44,91 @@ def train(config):
     with open(hydra.utils.to_absolute_path("corruptmnist/config/train_config.yaml"), "r") as file:
         wandb_config = yaml.safe_load(file)
 
-    with wandb.init(project="corruptmnist", config=wandb_config):
-        # Set the seeds
-        torch.manual_seed(config.seed)
-        random.seed(config.seed)
-        np.random.seed(config.seed)
-        
-        # Just to test that the different levels of logging works
-        log.debug("Used for debugging your code.")
-        log.info("Informative messages from your code.")
-        log.warning("Everything works but there is something to be aware of.")
-        log.error("There's been a mistake with the process.")
-        log.critical("There is something terribly wrong and process may terminate.\n")
-        
-        log.info("Training day and night")
-        log.info(config.learning_rate)
 
-        model = MyAwesomeModel(config)
-        
-        train_set, test_set = mnist(config.train_batch_size, config.test_batch_size)
+    # Set the seeds
+    torch.manual_seed(config.seed)
+    random.seed(config.seed)
+    np.random.seed(config.seed)
+    
+    # Just to test that the different levels of logging works
+    log.debug("Used for debugging your code.")
+    log.info("Informative messages from your code.")
+    log.warning("Everything works but there is something to be aware of.")
+    log.error("There's been a mistake with the process.")
+    log.critical("There is something terribly wrong and process may terminate.\n")
+    
+    log.info("Training day and night")
+    log.info(config.learning_rate)
 
-        # Training
-        trainer = Trainer(
-            accelerator="cpu",
-            check_val_every_n_epoch=1,
-            default_root_dir=os.getcwd(),
-            max_epochs=10,
-            limit_train_batches=0.20
-            )
-        trainer.fit(model, train_set)
-        # trainer.test(test_set)
+    model = MyAwesomeModel(config)
+    
+    train_set, test_set = mnist(config.train_batch_size, config.test_batch_size)
 
-        # # Training loop
-        # for epoch in range(config.epochs):
-        #     running_loss = 0
-        #     correct = 0
-        #     total = 0
+    # Training
+    checkpoint_callback = ModelCheckpoint(dirpath="./models", monitor="train_accuracy", mode="max")
+    trainer = Trainer(
+        accelerator="cpu",
+        check_val_every_n_epoch=1,
+        default_root_dir=os.getcwd(),
+        max_epochs=10,
+        limit_train_batches=0.20,
+        callbacks=[checkpoint_callback],
+        logger=pl.loggers.WandbLogger(project="corruptmnist_lightning", config=wandb_config),
+        )
+    trainer.fit(model, train_set)
+    # trainer.test(test_set)
 
-        #     for images, targets in train_set:
-        #         # Forward pass
-        #         optimizer.zero_grad()
-        #         outputs = model(images)
+    # # Training loop
+    # for epoch in range(config.epochs):
+    #     running_loss = 0
+    #     correct = 0
+    #     total = 0
 
-        #         # Backward pass
-        #         loss = criterion(outputs, targets)
-        #         loss.backward()
-        #         optimizer.step()
+    #     for images, targets in train_set:
+    #         # Forward pass
+    #         optimizer.zero_grad()
+    #         outputs = model(images)
 
-        #         running_loss += loss.item()
+    #         # Backward pass
+    #         loss = criterion(outputs, targets)
+    #         loss.backward()
+    #         optimizer.step()
 
-        #         # Accuracy calculation
-        #         _, predicted = torch.max(outputs.data, 1)
-        #         total += targets.size(0)
-        #         correct += (predicted == targets).sum().item()
+    #         running_loss += loss.item()
 
-        #     # Get metrics
-        #     accuracy = 100 * correct / total
-        #     loss = running_loss / len(train_set)
-        #     accuracies.append(accuracy)
-        #     losses.append(loss)
+    #         # Accuracy calculation
+    #         _, predicted = torch.max(outputs.data, 1)
+    #         total += targets.size(0)
+    #         correct += (predicted == targets).sum().item()
 
-        #     log.info(f"Epoch {epoch+1} of {config.epochs}")
-        #     log.info(f"Training loss: {loss}")
-        #     log.info(f"Accuracy: {accuracy}\n")
-        #     wandb.log({"Loss": loss})
-        #     wandb.log({"Accuracy": accuracy})
+    #     # Get metrics
+    #     accuracy = 100 * correct / total
+    #     loss = running_loss / len(train_set)
+    #     accuracies.append(accuracy)
+    #     losses.append(loss)
 
-        # # Do plotting
-        # plt.plot(losses, label="loss")
-        # plt.plot(accuracies, label="accuracy")
-        # plt.xlabel("Epoch")
-        # plt.ylabel("Score")
-        # # plt.savefig(f"{visualization_path}/viz.png")
-        # plt.savefig(f"viz.png")
-        # fig = plt.gcf()
-        # # wandb.log({"acc_curve": wandb.Image(fig)})
-        # wandb.log({"acc_plot": fig})
-        # wandb.finish()
-        # # plt.show()
+    #     log.info(f"Epoch {epoch+1} of {config.epochs}")
+    #     log.info(f"Training loss: {loss}")
+    #     log.info(f"Accuracy: {accuracy}\n")
+    #     wandb.log({"Loss": loss})
+    #     wandb.log({"Accuracy": accuracy})
 
-        # log.info("Saving final model.")
-        # # torch.save(model.state_dict(), f"{model_path}/checkpoint.pth")
-        # torch.save(model.state_dict(), f"checkpoint.pth")
+    # # Do plotting
+    # plt.plot(losses, label="loss")
+    # plt.plot(accuracies, label="accuracy")
+    # plt.xlabel("Epoch")
+    # plt.ylabel("Score")
+    # # plt.savefig(f"{visualization_path}/viz.png")
+    # plt.savefig(f"viz.png")
+    # fig = plt.gcf()
+    # # wandb.log({"acc_curve": wandb.Image(fig)})
+    # wandb.log({"acc_plot": fig})
+    # wandb.finish()
+    # # plt.show()
+
+    # log.info("Saving final model.")
+    # # torch.save(model.state_dict(), f"{model_path}/checkpoint.pth")
+    # torch.save(model.state_dict(), f"checkpoint.pth")
 
 
 if __name__ == "__main__":

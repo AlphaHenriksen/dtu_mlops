@@ -49,11 +49,11 @@ def mnist(train_batch_size, test_batch_size):
     concatenated_train_dataset = ConcatDataset(train_datasets)
 
     # Create a single train loader
-    train_loader = DataLoader(concatenated_train_dataset, batch_size=train_batch_size, shuffle=True,  num_workers=8)
+    train_loader = DataLoader(concatenated_train_dataset, batch_size=train_batch_size, shuffle=True)  # , num_workers=8
 
     # Create the test dataset and loader
     test_dataset = CustomDataset(f"{raw_path}/test_images.pt", f"{raw_path}/test_target.pt", transform=transform)
-    test_loader = DataLoader(test_dataset, batch_size=test_batch_size, shuffle=False,  num_workers=8)
+    test_loader = DataLoader(test_dataset, batch_size=test_batch_size, shuffle=False)  # ,  num_workers=8
 
     return train_loader, test_loader
 

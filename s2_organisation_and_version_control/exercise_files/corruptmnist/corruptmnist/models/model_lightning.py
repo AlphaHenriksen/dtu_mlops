@@ -1,5 +1,6 @@
 from torch import nn
 from pytorch_lightning import LightningModule
+from torchmetrics import Accuracy
 import torch
 
 
@@ -26,6 +27,7 @@ class MyAwesomeModel(LightningModule):
         self.flatten = nn.Flatten()
         
         self.criterion = torch.nn.CrossEntropyLoss()
+        self.accuracy = Accuracy(task="multiclass", num_classes=self.output_dim)
 
     def forward(self, x):
         x = self.relu(self.layer1(x))
@@ -35,10 +37,12 @@ class MyAwesomeModel(LightningModule):
         x = self.layer3(x)
         return x
 
-    def training_step(self, batch):
+    def training_step(self, batch, batch_idx):
         data, target = batch
         outputs = self(data)
         loss = self.criterion(outputs, target)
+        
+        self.log_dict({"train_accuracy": self.accuracy(outputs, target), "train_loss": loss})
         return loss
 
     def configure_optimizers(self):

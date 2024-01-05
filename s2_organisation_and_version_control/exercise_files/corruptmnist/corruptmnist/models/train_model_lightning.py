@@ -79,58 +79,6 @@ def train(config):
     trainer.fit(model, train_set, validation_set)
     trainer.test(model, test_set, ckpt_path="best")
 
-    # # Training loop
-    # for epoch in range(config.epochs):
-    #     running_loss = 0
-    #     correct = 0
-    #     total = 0
-
-    #     for images, targets in train_set:
-    #         # Forward pass
-    #         optimizer.zero_grad()
-    #         outputs = model(images)
-
-    #         # Backward pass
-    #         loss = criterion(outputs, targets)
-    #         loss.backward()
-    #         optimizer.step()
-
-    #         running_loss += loss.item()
-
-    #         # Accuracy calculation
-    #         _, predicted = torch.max(outputs.data, 1)
-    #         total += targets.size(0)
-    #         correct += (predicted == targets).sum().item()
-
-    #     # Get metrics
-    #     accuracy = 100 * correct / total
-    #     loss = running_loss / len(train_set)
-    #     accuracies.append(accuracy)
-    #     losses.append(loss)
-
-    #     log.info(f"Epoch {epoch+1} of {config.epochs}")
-    #     log.info(f"Training loss: {loss}")
-    #     log.info(f"Accuracy: {accuracy}\n")
-    #     wandb.log({"Loss": loss})
-    #     wandb.log({"Accuracy": accuracy})
-
-    # # Do plotting
-    # plt.plot(losses, label="loss")
-    # plt.plot(accuracies, label="accuracy")
-    # plt.xlabel("Epoch")
-    # plt.ylabel("Score")
-    # # plt.savefig(f"{visualization_path}/viz.png")
-    # plt.savefig(f"viz.png")
-    # fig = plt.gcf()
-    # # wandb.log({"acc_curve": wandb.Image(fig)})
-    # wandb.log({"acc_plot": fig})
-    # wandb.finish()
-    # # plt.show()
-
-    # log.info("Saving final model.")
-    # # torch.save(model.state_dict(), f"{model_path}/checkpoint.pth")
-    # torch.save(model.state_dict(), f"checkpoint.pth")
-
 
 if __name__ == "__main__":
     train()

@@ -9,4 +9,4 @@ defaults:
   - optimizer: sgd
   - model: model_config
   # Define your own logging scheme (does not work yet)
-  # - override hydra/job_logging: logger_config
+  - override hydra/job_logging: logger_config

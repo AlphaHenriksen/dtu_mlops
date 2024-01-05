@@ -7,6 +7,7 @@ import random
 import numpy as np
 import logging
 import logging.config
+from rich.logging import RichHandler
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
@@ -14,10 +15,12 @@ sys.path.append(parent_dir)
 from models.model import MyAwesomeModel
 from data.make_dataset import mnist
 
+# log = logging.getLogger('development')
 log = logging.getLogger(__name__)
+# log.handlers = [RichHandler(markup=True)]  # set rich handler
+
 model_path = hydra.utils.to_absolute_path('models')
 visualization_path = hydra.utils.to_absolute_path('reports/figures')
-
 
 @hydra.main(config_path="../config", config_name="train_config.yaml")
 def train(config):
@@ -35,11 +38,12 @@ def train(config):
     random.seed(config.seed)
     np.random.seed(config.seed)
     
+    # Just to test that the different levels of logging works
     log.debug("Used for debugging your code.")
     log.info("Informative messages from your code.")
     log.warning("Everything works but there is something to be aware of.")
     log.error("There's been a mistake with the process.")
-    log.critical("There is something terribly wrong and process may terminate.")
+    log.critical("There is something terribly wrong and process may terminate.\n")
     
     log.info("Training day and night")
     log.info(config.learning_rate)

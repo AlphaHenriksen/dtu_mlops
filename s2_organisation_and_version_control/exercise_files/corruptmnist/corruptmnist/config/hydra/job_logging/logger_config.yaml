@@ -1,43 +1,85 @@
-version: 1
+# formatters:
+#   keys: minimal,detailed
 
-root:
-    level: INFO
-    handlers: console
-    # handlers: console,info,error
+# formatter_minimal:
+#   format: "%(message)s"
+
+# formatter_detailed:
+#   format:
+#     "%(levelname)s %(asctime)s [%(name)s:%(filename)s:%(funcName)s:%(lineno)d]%(message)s"
+
+# handlers:
+#   keys: "console,info,error"
+
+# handler_console:
+#   class: StreamHandler
+#   level: DEBUG
+#   formatter: minimal
+#   args: (sys.stdout,)
+
+# handler_info:
+#   class: handlers.RotatingFileHandler
+#   level: INFO
+#   formatter: detailed
+#   backupCount: 10
+#   maxBytes: 10485760
+#   args: ("logs/info.log",)
+
+# handler_error:
+#   class: handlers.RotatingFileHandler
+#   level: ERROR
+#   formatter: detailed
+#   backupCount: 10
+#   maxBytes: 10485760
+#   args: ("logs/error.log",)
+
+# loggers:
+#   keys: root
+
+# logger_root:
+#   level: INFO
+#   handlers: console,info,error
+
+
+
+version: 1
+disable_existing_loggers: False
 
 formatters:
-  minimal: 
-    format: "%(message)s"
+    minimal:
+        format: "%(message)s"
 
-  detailed:
-    format: "%(levelname)s %(asctime)s [%(name)s:%(filename)s:%(funcName)s:%(lineno)d]%(message)s"
+    detailed:
+        format: "%(levelname)s %(asctime)s [%(name)s:%(filename)s:%(funcName)s:%(lineno)d]%(message)s"
 
 handlers:
-  console:
-    class: logging.StreamHandler
-    level: DEBUG
-    formatter: minimal
-    stream: ext://sys.stdout
+    console:
+        class: logging.StreamHandler
+        level: DEBUG
+        formatter: minimal
+        stream: ext://sys.stdout
 
-  # info:
-  #   class: logging.handlers.RotatingFileHandler
-  #   level: INFO
-  #   formatter: detailed
-  #   filename: logs/info.log
-  #   backupCount: 10
-  #   maxBytes: 10485760
+    info:
+        class: logging.handlers.RotatingFileHandler
+        level: INFO
+        formatter: detailed
+        backupCount: 10
+        maxBytes: 10485760
+        filename: info.log
 
-  # error:
-  #   class: logging.handlers.RotatingFileHandler
-  #   level: ERROR
-  #   formatter: detailed
-  #   filename: logs/error.log
-  #   backupCount: 10
-  #   maxBytes: 10485760
-  #   encoding: utf8
+    error:
+        class: logging.handlers.RotatingFileHandler
+        level: ERROR
+        formatter: detailed
+        backupCount: 10
+        maxBytes: 10485760
+        filename: error.log
 
 loggers:
-  # root:
-  #   level: INFO
-  #   handlers: [console]
-  #   # handlers: console,info,error
+    root:
+        level: DEBUG
+        handlers: [console, info, error]
+
+root:
+    level: DEBUG
+    handlers: [console, info, error]

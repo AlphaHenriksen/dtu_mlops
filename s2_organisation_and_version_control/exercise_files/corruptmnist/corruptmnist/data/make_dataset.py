@@ -3,6 +3,7 @@ from torch.utils.data import Dataset, DataLoader, ConcatDataset
 from torchvision import transforms
 import numpy as np
 import hydra
+import matplotlib.pyplot as plt
 
 
 raw_path = hydra.utils.to_absolute_path('data/raw')
@@ -40,31 +41,53 @@ def mnist(train_batch_size, test_batch_size):
     #                           ])
     transform = transforms.Compose([transforms.Normalize((0,), (1,))])
 
+    total_files = 6
+    train_files = 5
+    validation_files = total_files - train_files
+    
     train_datasets = [
         CustomDataset(f"{raw_path}/train_images_{i}.pt", f"{raw_path}/train_target_{i}.pt", transform=transform)
-        for i in range(6)
+        for i in range(train_files)
     ]
-
     # Concatenate the train datasets into one
     concatenated_train_dataset = ConcatDataset(train_datasets)
-
     # Create a single train loader
     train_loader = DataLoader(concatenated_train_dataset, batch_size=train_batch_size, shuffle=True)  # , num_workers=8
+
+    validation_loader = None
+    if validation_files > 0:
+        validation_datasets = [
+            CustomDataset(f"{raw_path}/train_images_{i}.pt", f"{raw_path}/train_target_{i}.pt", transform=transform)
+            for i in range(train_files, total_files)
+        ]
+        # Concatenate the train datasets into one
+        if validation_files > 1:
+            concatenated_validation_dataset = ConcatDataset(validation_datasets)
+            # Create a single train loader
+            validation_loader = DataLoader(concatenated_validation_dataset, batch_size=train_batch_size, shuffle=True)  # , num_workers=8
+        else:
+            validation_loader = DataLoader(validation_datasets[0], batch_size=train_batch_size, shuffle=True)  # , num_workers=8
 
     # Create the test dataset and loader
     test_dataset = CustomDataset(f"{raw_path}/test_images.pt", f"{raw_path}/test_target.pt", transform=transform)
     test_loader = DataLoader(test_dataset, batch_size=test_batch_size, shuffle=False)  # ,  num_workers=8
 
-    return train_loader, test_loader
+    return train_loader, validation_loader, test_loader
 
 
 if __name__ == "__main__":
-    train_loader, test_loader = mnist(32, 10000)
+    train_loader, validation_loader, test_loader = mnist(32, 10000)
 
     train_images, train_labels = next(iter(train_loader))
     # torch.save(train_images, f"{processed_path}/train_images.pt")
     # torch.save(train_labels, f"{processed_path}/train_labels.pt")
 
+    print(validation_loader)
+    validation_images, validation_labels = next(iter(validation_loader))
+    # Show the image using plt and cmap="gray"
+    plt.imshow(validation_images[0].squeeze(), cmap="gray")
+    plt.show()
+    
     test_images, test_labels = next(iter(test_loader))
     # # Save as torch tensors
     # torch.save(test_images, f"{processed_path}/test_images.pt")

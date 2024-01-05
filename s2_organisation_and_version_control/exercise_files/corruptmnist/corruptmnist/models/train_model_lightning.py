@@ -62,10 +62,10 @@ def train(config):
 
     model = MyAwesomeModel(config)
     
-    train_set, test_set = mnist(config.train_batch_size, config.test_batch_size)
+    train_set, validation_set, test_set = mnist(config.train_batch_size, config.test_batch_size)
 
     # Training
-    checkpoint_callback = ModelCheckpoint(dirpath="./models", monitor="train_accuracy", mode="max")
+    checkpoint_callback = ModelCheckpoint(dirpath="./models", monitor="validation_accuracy", mode="max")
     trainer = Trainer(
         accelerator="cpu",
         check_val_every_n_epoch=1,
@@ -74,9 +74,10 @@ def train(config):
         limit_train_batches=0.20,
         callbacks=[checkpoint_callback],
         logger=pl.loggers.WandbLogger(project="corruptmnist_lightning", config=wandb_config),
+        precision="32",
         )
-    trainer.fit(model, train_set)
-    # trainer.test(test_set)
+    trainer.fit(model, train_set, validation_set)
+    trainer.test(model, test_set, ckpt_path="best")
 
     # # Training loop
     # for epoch in range(config.epochs):

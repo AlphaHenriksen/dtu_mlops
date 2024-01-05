@@ -41,8 +41,28 @@ class MyAwesomeModel(LightningModule):
         data, target = batch
         outputs = self(data)
         loss = self.criterion(outputs, target)
-        
+
         self.log_dict({"train_accuracy": self.accuracy(outputs, target), "train_loss": loss})
+        # # self.logger.experiment is the same as wandb.log
+        # self.logger.experiment.log({'logits': wandb.Histrogram(outputs)})
+
+        return loss
+
+    def validation_step(self, batch, batch_idx):
+        # this is the validation loop
+        data, target = batch
+        outputs = self(data)
+        loss = self.criterion(outputs, target)
+
+        self.log_dict({"validation_accuracy": self.accuracy(outputs, target), "validation_loss": loss})
+
+    def test_step(self, batch, batch_idx):
+        data, target = batch
+        outputs = self(data)
+        loss = self.criterion(outputs, target)
+
+        self.log_dict({"test_accuracy": self.accuracy(outputs, target), "test_loss": loss})
+
         return loss
 
     def configure_optimizers(self):

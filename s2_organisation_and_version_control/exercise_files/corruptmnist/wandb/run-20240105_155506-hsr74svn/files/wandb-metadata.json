@@ -1,0 +1,49 @@
+{
+    "os": "Windows-10-10.0.19045-SP0",
+    "python": "3.11.5",
+    "heartbeatAt": "2024-01-05T14:55:08.329981",
+    "startedAt": "2024-01-05T14:55:06.390263",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "epochs=15",
+        "learning_rate=0.7792441136732419",
+        "train_batch_size=59"
+    ],
+    "state": "running",
+    "program": "C:\\Users\\ander\\OneDrive\\Skrivebord\\02476-Machine-Learning-Operations\\dtu_mlops\\s2_organisation_and_version_control\\exercise_files\\corruptmnist\\corruptmnist\\models\\train_model.py",
+    "codePathLocal": "corruptmnist\\models\\train_model.py",
+    "codePath": "corruptmnist\\models\\train_model.py",
+    "git": {
+        "remote": null,
+        "commit": "2c2c23ee88c2eacde9a44878b2e42c7b5f285123"
+    },
+    "email": "anders-10@live.dk",
+    "root": "C:/Users/ander/OneDrive/Skrivebord/02476-Machine-Learning-Operations/dtu_mlops/s2_organisation_and_version_control/exercise_files/corruptmnist",
+    "host": "LAPTOP-FR3OO0GM",
+    "username": "ander",
+    "executable": "C:\\Users\\ander\\miniconda3\\python.exe",
+    "cpu_count": 8,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 1400.0,
+        "min": 0.0,
+        "max": 2000.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1400.0,
+            "min": 0.0,
+            "max": 2000.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 475.69237899780273,
+            "used": 468.3455696105957
+        }
+    },
+    "memory": {
+        "total": 15.372367858886719
+    }
+}

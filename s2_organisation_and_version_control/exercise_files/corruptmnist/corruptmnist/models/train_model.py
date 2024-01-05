@@ -141,3 +141,6 @@ if __name__ == "__main__":
     
     # Run multirun
     # python corruptmnist/models/train_model.py learning_rate=0.001,0.0001 optimizer.name=sgd,adam,rmsprop --multirun
+    
+    # Run sweeps with wandb
+    

@@ -1,0 +1,49 @@
+wandb_version: 1
+
+epochs:
+  desc: null
+  value: 7
+learning_rate:
+  desc: null
+  value: 0.046063555768104954
+train_batch_size:
+  desc: null
+  value: 50
+test_batch_size:
+  desc: null
+  value: 10000
+seed:
+  desc: null
+  value: 123
+defaults:
+  desc: null
+  value:
+  - dataset: mnist
+  - optimizer: adam
+  - model: model_config
+  - override hydra/job_logging: logger_config
+_wandb:
+  desc: null
+  value:
+    python_version: 3.11.5
+    cli_version: 0.16.1
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1704466948.494251
+    t:
+      1:
+      - 1
+      - 41
+      - 50
+      - 55
+      - 105
+      3:
+      - 16
+      - 23
+      4: 3.11.5
+      5: 0.16.1
+      8:
+      - 3
+      - 5
+      13: windows-amd64

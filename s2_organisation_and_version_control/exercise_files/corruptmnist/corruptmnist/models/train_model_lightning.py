@@ -1,3 +1,16 @@
+# TODO: S4 M14 12. Lightning CLI implementation
+# https://lightning.ai/docs/pytorch/stable/cli/lightning_cli.html
+# TODO: S4 M14 11. Lightning profiler
+# https://lightning.ai/docs/pytorch/latest/tuning/profiler.html
+
+# TODO: Check out:
+#     torchmetrics
+#     https://lightning.ai/docs/torchmetrics/stable/
+#     lightning flash
+#     https://lightning-flash.readthedocs.io/en/latest/
+#     lightning bolts
+#     https://lightning-bolts.readthedocs.io/en/latest/
+
 import torch
 import os
 import sys
@@ -62,7 +75,7 @@ def train(config):
 
     model = MyAwesomeModel(config)
     
-    train_set, validation_set, test_set = mnist(config.train_batch_size, config.test_batch_size)
+    train_set, validation_set, test_set = mnist(config.train_batch_size, config.test_batch_size, 5, 1)
 
     # Training
     checkpoint_callback = ModelCheckpoint(dirpath="./models", monitor="validation_accuracy", mode="max")

@@ -31,7 +31,7 @@ class CustomDataset(Dataset):
         return image, target
 
 
-def mnist(train_batch_size, test_batch_size):
+def mnist(train_batch_size, test_batch_size, num_train_files, num_validation_files):
     """Return train and test dataloaders for MNIST."""
     # exchange with the corrupted mnist dataset
     # Create a list of train datasets for each i in range(6)
@@ -39,15 +39,18 @@ def mnist(train_batch_size, test_batch_size):
     # transform = transforms.Compose([transforms.ToTensor(),
     #                           transforms.Normalize(0, 1),
     #                           ])
+    if train_batch_size > 0:
+        raise ValueError(f"train_batch_size should be greater than 0, not {train_batch_size}.")
+    if test_batch_size > 0:
+        raise ValueError(f"test_batch_size should be greater than 0, not {test_batch_size}.")
+
     transform = transforms.Compose([transforms.Normalize((0,), (1,))])
 
-    total_files = 6
-    train_files = 5
-    validation_files = total_files - train_files
+    num_total_files = num_train_files + num_validation_files
     
     train_datasets = [
         CustomDataset(f"{raw_path}/train_images_{i}.pt", f"{raw_path}/train_target_{i}.pt", transform=transform)
-        for i in range(train_files)
+        for i in range(num_train_files)
     ]
     # Concatenate the train datasets into one
     concatenated_train_dataset = ConcatDataset(train_datasets)
@@ -55,13 +58,13 @@ def mnist(train_batch_size, test_batch_size):
     train_loader = DataLoader(concatenated_train_dataset, batch_size=train_batch_size, shuffle=True)  # , num_workers=8
 
     validation_loader = None
-    if validation_files > 0:
+    if num_validation_files > 0:
         validation_datasets = [
             CustomDataset(f"{raw_path}/train_images_{i}.pt", f"{raw_path}/train_target_{i}.pt", transform=transform)
-            for i in range(train_files, total_files)
+            for i in range(num_train_files, num_total_files)
         ]
         # Concatenate the train datasets into one
-        if validation_files > 1:
+        if num_validation_files > 1:
             concatenated_validation_dataset = ConcatDataset(validation_datasets)
             # Create a single train loader
             validation_loader = DataLoader(concatenated_validation_dataset, batch_size=train_batch_size, shuffle=True)  # , num_workers=8
@@ -76,7 +79,7 @@ def mnist(train_batch_size, test_batch_size):
 
 
 if __name__ == "__main__":
-    train_loader, validation_loader, test_loader = mnist(32, 10000)
+    train_loader, validation_loader, test_loader = mnist(32, 10000, 5, 1)
 
     train_images, train_labels = next(iter(train_loader))
     # torch.save(train_images, f"{processed_path}/train_images.pt")

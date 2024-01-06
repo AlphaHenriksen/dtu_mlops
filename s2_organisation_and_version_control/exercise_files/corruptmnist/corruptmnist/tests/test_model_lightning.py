@@ -1,15 +1,7 @@
-# TODO: S4 M14 12. Lightning CLI implementation
-# https://lightning.ai/docs/pytorch/stable/cli/lightning_cli.html
-# TODO: S4 M14 11. Lightning profiler
-# https://lightning.ai/docs/pytorch/latest/tuning/profiler.html
-
-# TODO: Check out:
-#     torchmetrics
-#     https://lightning.ai/docs/torchmetrics/stable/
-#     lightning flash
-#     https://lightning-flash.readthedocs.io/en/latest/
-#     lightning bolts
-#     https://lightning-bolts.readthedocs.io/en/latest/
+# TODO: Get full coverage
+#     Test coverage by doing:
+#         coverage run -m pytest corruptmnist/tests/
+#         coverage report -m
 
 import torch
 import os

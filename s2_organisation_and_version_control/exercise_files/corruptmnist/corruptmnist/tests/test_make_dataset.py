@@ -1,3 +1,8 @@
+# TODO: Get full coverage
+#     Test coverage by doing:
+#         coverage run -m pytest corruptmnist/tests/
+#         coverage report -m
+
 import torch
 from torch.utils.data import Dataset, DataLoader, ConcatDataset
 from torchvision import transforms

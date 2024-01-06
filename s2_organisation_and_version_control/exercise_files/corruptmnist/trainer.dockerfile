@@ -12,7 +12,6 @@ RUN apt update && \
 COPY requirements.txt requirements.txt
 COPY pyproject.toml pyproject.toml
 COPY corruptmnist/ corruptmnist/
-COPY data/ data/
 COPY reports/ reports/
 COPY reports/figures/ reports/figures/
 COPY models/ models/
@@ -21,9 +20,9 @@ COPY models/ models/
 WORKDIR /
 RUN pip install -r requirements.txt --no-cache-dir
 
-ENTRYPOINT ["python", "-u", "corruptmnist/models/train_model.py"]
+ENTRYPOINT ["python", "-u", "corruptmnist/models/train_model_lightning.py"]
 
-# Build using 
+# Build using
 # docker build -f trainer.dockerfile . -t trainer:latest
 
 # Run

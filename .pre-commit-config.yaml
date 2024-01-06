@@ -14,6 +14,7 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-case-conflict
       - id: detect-private-key
+      - id: double-quote-string-fixer
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.1.3

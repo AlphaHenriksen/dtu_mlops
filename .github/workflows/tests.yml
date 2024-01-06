@@ -22,8 +22,8 @@ jobs:
       run: |
         pip install pip
         python -m pip install --upgrade pip
-        pip install -r ../s2_organisation_and_version_control/exercise_files/corruptmnist/corruptmnist/requirements.txt
-        pip install -r ../s2_organisation_and_version_control/exercise_files/corruptmnist/corruptmnist/requirements_tests.txt
+        pip install -r ././s2_organisation_and_version_control/exercise_files/corruptmnist/corruptmnist/requirements.txt
+        pip install -r ././s2_organisation_and_version_control/exercise_files/corruptmnist/corruptmnist/requirements_tests.txt
     - name: Test with pytest
       run: |
         pip install pytest

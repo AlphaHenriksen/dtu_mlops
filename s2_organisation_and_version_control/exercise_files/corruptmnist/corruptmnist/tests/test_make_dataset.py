@@ -17,6 +17,7 @@ raw_path = hydra.utils.to_absolute_path('data/raw')
 processed_path = hydra.utils.to_absolute_path('data/processed')
 
 
+@pytest.mark.skipif(not os.path.exists(raw_path), reason="Data files not found")
 def test_custom_dataset():
     images_file = f"{raw_path}/train_images_0.pt"
     target_file = f"{raw_path}/train_target_0.pt"
@@ -28,6 +29,7 @@ def test_custom_dataset():
     assert isinstance(target, torch.Tensor), f"target was expected to be a torch tensor, not {type(target)}."
 
 
+@pytest.mark.skipif(not os.path.exists(processed_path), reason="Data files not found")
 def test_mnist_dataloaders():
     
     train_loader, validation_loader, test_loader = make_dataset.mnist(32, 10000, 5, 1)
@@ -39,6 +41,7 @@ def test_mnist_dataloaders():
     assert validation_loader is None, f"validation_loader should be empty when no data is defined for validation."
     
 
+@pytest.mark.skipif(not os.path.exists(processed_path), reason="Data files not found")
 def test_mnist_type_handing():
     with pytest.raises(ValueError):
         make_dataset.mnist(0, 10000, 5, 1)

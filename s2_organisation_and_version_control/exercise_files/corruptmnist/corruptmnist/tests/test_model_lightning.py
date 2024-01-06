@@ -2,6 +2,7 @@
 #     Test coverage by doing:
 #         coverage run -m pytest corruptmnist/tests/
 #         coverage report -m
+#
 
 import torch
 import os

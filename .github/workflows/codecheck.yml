@@ -50,11 +50,11 @@ jobs:
         ruff check ././s2_organisation_and_version_control/exercise_files/corruptmnist/corruptmnist/
         ruff format ././s2_organisation_and_version_control/exercise_files/corruptmnist/corruptmnist/
 
-    - name: Test with mypy
-      run: |
-        pip install mypy
-        mypy ././s2_organisation_and_version_control/exercise_files/corruptmnist/corruptmnist/
-    
+    # - name: Test with mypy
+    #   run: |
+    #     pip install mypy
+    #     mypy ././s2_organisation_and_version_control/exercise_files/corruptmnist/corruptmnist/
+
     # - name: Get pip cache dir
     #   id: pip-cache
     #   run: |

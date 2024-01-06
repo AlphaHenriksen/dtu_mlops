@@ -42,23 +42,44 @@ def test_mnist_dataloaders():
     
 
 @pytest.mark.skipif(not os.path.exists(processed_path), reason="Data files not found")
-def test_mnist_type_handing():
+@pytest.mark.parametrize(
+    "train_batch_size, test_batch_size, num_train_files, num_validation_files", 
+    [(0, 10000, 5, 1),
+     (32, 0, 5, 1)]
+    )
+def test_mnist_batch_value_handing(train_batch_size, test_batch_size, num_train_files, num_validation_files):
     with pytest.raises(ValueError):
-        make_dataset.mnist(0, 10000, 5, 1)
-    with pytest.raises(ValueError):
-        make_dataset.mnist(10000, 0, 5, 1)
+        make_dataset.mnist(train_batch_size, test_batch_size, num_train_files, num_validation_files)
 
-    with pytest.raises(TypeError):
-        make_dataset.mnist("32", 10000, 5, 1)
-    with pytest.raises(TypeError):
-        make_dataset.mnist(10000, "32", 5, 1)
-    
-    with pytest.raises(ValueError):
-        make_dataset.mnist(0, 10000, 0, 1)
-    with pytest.raises(ValueError):
-        make_dataset.mnist(10000, 0, 5, -1)
 
+@pytest.mark.skipif(not os.path.exists(processed_path), reason="Data files not found")
+@pytest.mark.parametrize(
+    "train_batch_size, test_batch_size, num_train_files, num_validation_files", 
+    [("32", 10000, 5, 1),
+     (32, "10000", 5, 1)]
+    )
+def test_mnist_batch_type_handing(train_batch_size, test_batch_size, num_train_files, num_validation_files):
     with pytest.raises(TypeError):
-        make_dataset.mnist("32", 10000, "5", 1)
+        make_dataset.mnist(train_batch_size, test_batch_size, num_train_files, num_validation_files)
+
+
+@pytest.mark.skipif(not os.path.exists(processed_path), reason="Data files not found")
+@pytest.mark.parametrize(
+    "train_batch_size, test_batch_size, num_train_files, num_validation_files", 
+    [(32, 10000, 0, 1),
+     (32, 10000, 5, -1)]
+    )
+def test_mnist_numfiles_value_handing(train_batch_size, test_batch_size, num_train_files, num_validation_files):
+    with pytest.raises(ValueError):
+        make_dataset.mnist(train_batch_size, test_batch_size, num_train_files, num_validation_files)
+
+
+@pytest.mark.skipif(not os.path.exists(processed_path), reason="Data files not found")
+@pytest.mark.parametrize(
+    "train_batch_size, test_batch_size, num_train_files, num_validation_files", 
+    [(32, 10000, "5", 1),
+     (32, 10000, 5, "1")]
+    )
+def test_mnist_numfiles_type_handing(train_batch_size, test_batch_size, num_train_files, num_validation_files):
     with pytest.raises(TypeError):
-        make_dataset.mnist(10000, "32", 5, "1")
+        make_dataset.mnist(train_batch_size, test_batch_size, num_train_files, num_validation_files)

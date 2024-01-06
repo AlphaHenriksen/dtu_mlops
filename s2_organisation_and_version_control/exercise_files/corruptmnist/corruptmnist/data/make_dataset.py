@@ -39,10 +39,26 @@ def mnist(train_batch_size, test_batch_size, num_train_files, num_validation_fil
     # transform = transforms.Compose([transforms.ToTensor(),
     #                           transforms.Normalize(0, 1),
     #                           ])
-    if train_batch_size > 0:
+    
+    # Check that both are above 0
+    if train_batch_size < 1:
         raise ValueError(f"train_batch_size should be greater than 0, not {train_batch_size}.")
-    if test_batch_size > 0:
+    if test_batch_size < 1:
         raise ValueError(f"test_batch_size should be greater than 0, not {test_batch_size}.")
+    if num_train_files < 1:
+        raise ValueError(f"num_train_files should be at least 1, not {num_train_files}.")
+    if num_validation_files < 0:
+        raise ValueError(f"num_test_files should be at least 1, not {num_validation_files}.")
+
+    # Check if the type of train_batch_size and test_batch_size are integers or throw a typeerror
+    if not isinstance(train_batch_size, int):
+        raise TypeError(f"train_batch_size should be an integer, not {type(train_batch_size)}.")
+    if not isinstance(test_batch_size, int):
+        raise TypeError(f"test_batch_size should be an integer, not {type(test_batch_size)}.")
+    if not isinstance(num_train_files, int):
+        raise TypeError(f"num_train_files should be an integer, not {type(num_train_files)}.")
+    if not isinstance(num_validation_files, int):
+        raise TypeError(f"num_validation_files should be an integer, not {type(num_validation_files)}.")
 
     transform = transforms.Compose([transforms.Normalize((0,), (1,))])
 

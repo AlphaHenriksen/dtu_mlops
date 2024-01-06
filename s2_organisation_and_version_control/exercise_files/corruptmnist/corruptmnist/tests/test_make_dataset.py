@@ -17,39 +17,45 @@ raw_path = hydra.utils.to_absolute_path('data/raw')
 processed_path = hydra.utils.to_absolute_path('data/processed')
 
 
-class TestMnist:
+def test_custom_dataset():
+    images_file = f"{raw_path}/train_images_0.pt"
+    target_file = f"{raw_path}/train_target_0.pt"
 
-    @pytest.mark.parametrize("train_batch_size, test_batch_size, num_train_files, num_validation_files, out", [
-    (0, 100000, 5, 1),
-    (100000, 0, 5, 1),
-    ])
-    def test_train_batch_size(self, train_batch_size, test_batch_size, num_train_files, num_validation_files, out):
-            with pytest.raises(TypeError):
-                make_dataset.mnist(train_batch_size, test_batch_size, num_train_files, num_validation_files)
+    dataset = make_dataset.CustomDataset(images_file, target_file)
 
-    def test_output(self, train_batch_size, test_batch_size, num_train_files, num_validation_files, out):
-        train, val, test = make_dataset.mnist(train_batch_size, test_batch_size, num_train_files, num_validation_files)
-            
-        test_imgs, test_labels = next(iter(test))
-        assert len(test_imgs) == 5000, f"There should be 5000 test images, not {len(test_imgs)}."
+    image, target = dataset[0]
+    assert isinstance(image, torch.Tensor), f"image was expected to be a torch tensor, not {type(image)}."
+    assert isinstance(target, torch.Tensor), f"target was expected to be a torch tensor, not {type(target)}."
 
-        if num_validation_files == 0:
-            train_imgs, train_labels = next(iter(train))
-            
-            assert val is None, "The validation data should be None, since none of the files are picked for validation."
-            
-            assert len(train_imgs) == 30000, f"When all files are picked for training, there should be 30000 train images, not {len(train_imgs)}."
 
-    # train_loader, validation_loader, test_loader = make_dataset.mnist(32, 10000, 5, 0)
+def test_mnist_dataloaders():
+    
+    train_loader, validation_loader, test_loader = make_dataset.mnist(32, 10000, 5, 1)
+    assert isinstance(train_loader, DataLoader), f"train_loader was expected to be a DataLoader, not {type(train_loader)}."
+    assert isinstance(test_loader, DataLoader), f"test_loader was expected to be a DataLoader, not {type(test_loader)}."
+    assert isinstance(validation_loader, DataLoader), f"validation_loader was expected to be a DataLoader, not {type(validation_loader)}."
+    
+    _, validation_loader, _ = make_dataset.mnist(32, 10000, 6, 0)
+    assert validation_loader is None, f"validation_loader should be empty when no data is defined for validation."
+    
 
-    # train_images, train_labels = next(iter(train_loader))
-    # # torch.save(train_images, f"{processed_path}/train_images.pt")
-    # # torch.save(train_labels, f"{processed_path}/train_labels.pt")
+def test_mnist_type_handing():
+    with pytest.raises(ValueError):
+        make_dataset.mnist(0, 10000, 5, 1)
+    with pytest.raises(ValueError):
+        make_dataset.mnist(10000, 0, 5, 1)
 
-    # print(validation_loader)
-    # validation_images, validation_labels = next(iter(validation_loader))
-    # # Show the image using plt and cmap="gray"
-    # plt.imshow(validation_images[0].squeeze(), cmap="gray")
-    # plt.show()
+    with pytest.raises(TypeError):
+        make_dataset.mnist("32", 10000, 5, 1)
+    with pytest.raises(TypeError):
+        make_dataset.mnist(10000, "32", 5, 1)
+    
+    with pytest.raises(ValueError):
+        make_dataset.mnist(0, 10000, 0, 1)
+    with pytest.raises(ValueError):
+        make_dataset.mnist(10000, 0, 5, -1)
 
-    # test_images, test_labels = next(iter(test_loader))
+    with pytest.raises(TypeError):
+        make_dataset.mnist("32", 10000, "5", 1)
+    with pytest.raises(TypeError):
+        make_dataset.mnist(10000, "32", 5, "1")

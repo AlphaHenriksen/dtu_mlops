@@ -2,6 +2,7 @@ from torch import nn
 from pytorch_lightning import LightningModule
 from torchmetrics import Accuracy
 import torch
+import numpy as np
 
 
 class MyAwesomeModel(LightningModule):
@@ -17,6 +18,20 @@ class MyAwesomeModel(LightningModule):
         self.kernel_size = config.model.kernel_size
         self.padding = config.model.padding
         self.dropout = config.model.dropout
+        x_dim_1d = np.sqrt(self.x_dim).astype(int)
+
+        # # Test the dimensions and how they match
+        # expected_hidden_dim = (x_dim_1d - self.kernel_size + self.padding)/1 + 1
+        # if self.hidden_dim != expected_hidden_dim:
+        #     raise ValueError(f"Hidden dimension is not correct. x_dim should convert to hidden_dim after \
+        #     output but currently converts to {expected_hidden_dim}")
+        
+        # expected_latent_dim = (self.hidden_dim - self.kernel_size + self.padding)/1 + 1
+        # if self.latent_dim != expected_latent_dim:
+        #     raise ValueError(f"Hidden dimension is not correct. x_dim should convert to hidden_dim after \
+        #     output but currently converts to {expected_latent_dim}")
+        if self.config.optimizer.name not in ["adam", "sgd", "rmsprop"]:
+            raise ValueError(f"Optimizer {self.config.optimizer.name} not supported. Please choose one of [adam, sgd, rmsprop].")
         
         self.layer1 = nn.Conv2d(1, self.hidden_dim, self.kernel_size, padding=self.padding)
         self.layer2 = nn.Conv2d(self.hidden_dim, self.latent_dim, self.kernel_size, padding=self.padding)
@@ -72,5 +87,3 @@ class MyAwesomeModel(LightningModule):
             return torch.optim.SGD(self.parameters(), lr=self.config.learning_rate)
         elif self.config.optimizer.name == 'rmsprop':
             return torch.optim.RMSprop(self.parameters(), lr=self.config.learning_rate)
-        else:
-            raise ValueError(f"Optimizer {self.config.optimizer.name} not supported. Please choose one of [adam, sgd, rmsprop].")

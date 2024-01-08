@@ -42,115 +42,115 @@ def train(config):
     with open(hydra.utils.to_absolute_path("corruptmnist/config/train_config.yaml"), "r") as file:
         wandb_config = yaml.safe_load(file)
 
-    with wandb.init(project="corruptmnist", config=wandb_config):
-        # Set the seeds
-        torch.manual_seed(config.seed)
-        random.seed(config.seed)
-        np.random.seed(config.seed)
+    #with wandb.init(project="corruptmnist", config=wandb_config):
+    # Set the seeds
+    torch.manual_seed(config.seed)
+    random.seed(config.seed)
+    np.random.seed(config.seed)
 
-        # Just to test that the different levels of logging works
-        log.debug("Used for debugging your code.")
-        log.info("Informative messages from your code.")
-        log.warning("Everything works but there is something to be aware of.")
-        log.error("There's been a mistake with the process.")
-        log.critical("There is something terribly wrong and process may terminate.\n")
+    # Just to test that the different levels of logging works
+    log.debug("Used for debugging your code.")
+    log.info("Informative messages from your code.")
+    log.warning("Everything works but there is something to be aware of.")
+    log.error("There's been a mistake with the process.")
+    log.critical("There is something terribly wrong and process may terminate.\n")
 
-        log.info("Training day and night")
-        log.info(config.learning_rate)
+    log.info("Training day and night")
+    log.info(config.learning_rate)
 
-        model = MyAwesomeModel(
-            config.model.x_dim,
-            config.model.hidden_dim,
-            config.model.latent_dim,
-            config.model.output_dim,
-            config.model.kernel_size,
-            config.model.padding,
-            config.model.dropout
-            )
-        train_set, _, _ = mnist(config.train_batch_size, config.test_batch_size, 5, 1)
+    model = MyAwesomeModel(
+        config.model.x_dim,
+        config.model.hidden_dim,
+        config.model.latent_dim,
+        config.model.output_dim,
+        config.model.kernel_size,
+        config.model.padding,
+        config.model.dropout
+        )
+    train_set, _, _ = mnist(config.train_batch_size, config.test_batch_size, 5, 1)
 
-        if config.optimizer.name == 'adam':
-            optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
-        elif config.optimizer.name == 'sgd':
-            optimizer = torch.optim.SGD(model.parameters(), lr=config.learning_rate)
-        elif config.optimizer.name == 'rmsprop':
-            optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)
-        else:
-            raise ValueError(f"Optimizer {config.optimizer.name} not supported. Please choose one of [adam, sgd, rmsprop].")
+    if config.optimizer.name == 'adam':
+        optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
+    elif config.optimizer.name == 'sgd':
+        optimizer = torch.optim.SGD(model.parameters(), lr=config.learning_rate)
+    elif config.optimizer.name == 'rmsprop':
+        optimizer = torch.optim.RMSprop(model.parameters(), lr=config.learning_rate)
+    else:
+        raise ValueError(f"Optimizer {config.optimizer.name} not supported. Please choose one of [adam, sgd, rmsprop].")
 
-        criterion = torch.nn.CrossEntropyLoss()
+    criterion = torch.nn.CrossEntropyLoss()
 
-        accuracies = []
-        losses = []
+    accuracies = []
+    losses = []
 
-        # Training loop
-        for epoch in range(config.epochs):
-            running_loss = 0
-            correct = 0
-            total = 0
+    # Training loop
+    for epoch in range(config.epochs):
+        running_loss = 0
+        correct = 0
+        total = 0
 
-            for images, targets in train_set:
-                # Forward pass
-                optimizer.zero_grad()
-                outputs = model(images)
+        for images, targets in train_set:
+            # Forward pass
+            optimizer.zero_grad()
+            outputs = model(images)
 
-                # Backward pass
-                loss = criterion(outputs, targets)
-                loss.backward()
-                optimizer.step()
+            # Backward pass
+            loss = criterion(outputs, targets)
+            loss.backward()
+            optimizer.step()
 
-                running_loss += loss.item()
+            running_loss += loss.item()
 
-                # Accuracy calculation
-                _, predicted = torch.max(outputs.data, 1)
-                total += targets.size(0)
-                correct += (predicted == targets).sum().item()
+            # Accuracy calculation
+            _, predicted = torch.max(outputs.data, 1)
+            total += targets.size(0)
+            correct += (predicted == targets).sum().item()
 
-            # Get metrics
-            accuracy = 100 * correct / total
-            loss = running_loss / len(train_set)
-            accuracies.append(accuracy)
-            losses.append(loss)
+        # Get metrics
+        accuracy = 100 * correct / total
+        loss = running_loss / len(train_set)
+        accuracies.append(accuracy)
+        losses.append(loss)
 
-            log.info(f"Epoch {epoch+1} of {config.epochs}")
-            log.info(f"Training loss: {loss}")
-            log.info(f"Accuracy: {accuracy}\n")
-            wandb.log({"Loss": loss})
-            wandb.log({"Accuracy": accuracy})
+        log.info(f"Epoch {epoch+1} of {config.epochs}")
+        log.info(f"Training loss: {loss}")
+        log.info(f"Accuracy: {accuracy}\n")
+        # wandb.log({"Loss": loss})
+        # wandb.log({"Accuracy": accuracy})
 
-        preds, target = [], []
-        for batch in train_set:
-            x, y = batch
-            probs = model(x)
-            preds.append(probs.argmax(dim=-1))
-            target.append(y.detach())
+    preds, target = [], []
+    for batch in train_set:
+        x, y = batch
+        probs = model(x)
+        preds.append(probs.argmax(dim=-1))
+        target.append(y.detach())
 
-        target = torch.cat(target, dim=0)
-        preds = torch.cat(preds, dim=0)
+    target = torch.cat(target, dim=0)
+    preds = torch.cat(preds, dim=0)
 
-        report = classification_report(target, preds)
-        with open("classification_report.txt", 'w') as outfile:
-            outfile.write(report)
-        confmat = confusion_matrix(target, preds)
-        disp = ConfusionMatrixDisplay(confmat)
-        plt.savefig('confusion_matrix.png')
+    report = classification_report(target, preds)
+    with open("classification_report.txt", 'w') as outfile:
+        outfile.write(report)
+    confmat = confusion_matrix(target, preds)
+    disp = ConfusionMatrixDisplay(confmat)
+    plt.savefig('confusion_matrix.png')
 
-        # Do plotting
-        plt.plot(losses, label="loss")
-        plt.plot(accuracies, label="accuracy")
-        plt.xlabel("Epoch")
-        plt.ylabel("Score")
-        # plt.savefig(f"{visualization_path}/viz.png")
-        plt.savefig(f"viz.png")
-        fig = plt.gcf()
-        # wandb.log({"acc_curve": wandb.Image(fig)})
-        wandb.log({"acc_plot": fig})
-        wandb.finish()
-        # plt.show()
+    # Do plotting
+    plt.plot(losses, label="loss")
+    plt.plot(accuracies, label="accuracy")
+    plt.xlabel("Epoch")
+    plt.ylabel("Score")
+    # plt.savefig(f"{visualization_path}/viz.png")
+    plt.savefig(f"viz.png")
+    fig = plt.gcf()
+    # wandb.log({"acc_curve": wandb.Image(fig)})
+    # wandb.log({"acc_plot": fig})
+    # wandb.finish()
+    # plt.show()
 
-        log.info("Saving final model.")
-        # torch.save(model.state_dict(), f"{model_path}/checkpoint.pth")
-        torch.save(model.state_dict(), f"checkpoint.pth")
+    log.info("Saving final model.")
+    # torch.save(model.state_dict(), f"{model_path}/checkpoint.pth")
+    torch.save(model.state_dict(), f"checkpoint.pth")
 
 
 if __name__ == "__main__":

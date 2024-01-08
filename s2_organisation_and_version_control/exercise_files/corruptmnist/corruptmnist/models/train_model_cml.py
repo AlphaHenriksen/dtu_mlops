@@ -67,7 +67,7 @@ def train(config):
             config.model.padding,
             config.model.dropout
             )
-        train_set, _ = mnist(config.train_batch_size, config.test_batch_size)
+        train_set, _, _ = mnist(config.train_batch_size, config.test_batch_size, 5, 1)
 
         if config.optimizer.name == 'adam':
             optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
@@ -132,7 +132,7 @@ def train(config):
         with open("classification_report.txt", 'w') as outfile:
             outfile.write(report)
         confmat = confusion_matrix(target, preds)
-        disp = ConfusionMatrixDisplay(cm = confmat, )
+        disp = ConfusionMatrixDisplay(confmat)
         plt.savefig('confusion_matrix.png')
 
         # Do plotting

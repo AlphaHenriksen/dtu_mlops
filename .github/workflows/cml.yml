@@ -10,7 +10,8 @@ jobs:
         run: |
           pip install -r ././s2_organisation_and_version_control/exercise_files/corruptmnist/corruptmnist/requirements.txt
           pip install -r ././s2_organisation_and_version_control/exercise_files/corruptmnist/corruptmnist/requirements_tests.txt
-          python ././s2_organisation_and_version_control/exercise_files/corruptmnist/corruptmnist/models/train_model_cml.py  # run training
+          cd ././s2_organisation_and_version_control/exercise_files/corruptmnist
+          python corruptmnist/models/train_model_cml.py  # run training
       - name: Write report
         env:
           # this authenticates that the right permissions are in place

@@ -4,7 +4,7 @@ import re
 from pydantic import BaseModel
 from fastapi import UploadFile, File
 from typing import Optional
-import cv2
+# import cv2
 from fastapi.responses import FileResponse
 
 
@@ -70,11 +70,12 @@ async def cv_model(data: UploadFile = File(...), h: int = None, w: int = None):
         image.write(content)
         image.close()
 
-    if h and w:
-        image = cv2.imread("image.jpg")
-        res = cv2.resize(image, (h, w))
-        cv2.imwrite('image_resize.jpg', res)
-        FileResponse('image_resize.jpg')
+    # if h and w:
+    #     image = cv2.imread("image.jpg")
+    #     res = cv2.resize(image, (h, w))
+    #     cv2.imwrite('image_resize.jpg', res)
+    #     FileResponse('image_resize.jpg')
+    FileResponse('image.jpg')
 
     response = {
         "input": data,

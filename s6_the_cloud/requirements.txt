@@ -1,0 +1,7 @@
+fastapi==0.108.0
+pydantic==2.5.3
+uvicorn>=0.15.0,<0.16.0
+Requests==2.31.0
+python-multipart==0.0.6
+
+# gcloud compute instances create instance1 --zone "europe-west1-b" --project "theta-actor-410710" --image-family=pytorch-latest-cpu --image-project=deeplearning-platform-release

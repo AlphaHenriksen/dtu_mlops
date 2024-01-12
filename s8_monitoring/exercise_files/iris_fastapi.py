@@ -1,4 +1,5 @@
 import pickle
+import pandas as pd
 from datetime import datetime
 
 from evidently.metric_preset import (
@@ -72,7 +73,15 @@ async def iris_inference_v2(
 @app.get("/iris_monitoring/", response_class=HTMLResponse)
 async def iris_monitoring():
     """Simple get request method that returns a monitoring report."""
-    iris_frame = datasets.load_iris(as_frame="auto").frame
+    iris_frame = datasets.load_iris(as_frame=True).frame
+    iris_frame.rename(columns={
+        'sepal length (cm)': 'sepal_length',
+        'sepal width (cm)': 'sepal_width',
+        'petal length (cm)': 'petal_length',
+        'petal width (cm)': 'petal_width'}, inplace=True)
+    current_data = pd.read_csv('prediction_database.csv')
+    current_data.drop(["time"], axis=1, inplace=True)
+    current_data.rename(columns={'prediction': 'target'}, inplace=True)
 
     data_drift_report = Report(
         metrics=[
